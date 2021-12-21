@@ -12,6 +12,7 @@ import (
 	"github.com/armosec/opa-utils/reporthandling"
 
 	"github.com/armosec/k8s-interface/cloudsupport"
+	cloudsupportv1 "github.com/armosec/k8s-interface/cloudsupport/v1"
 	"github.com/armosec/k8s-interface/k8sinterface"
 	"github.com/armosec/k8s-interface/workloadinterface"
 
@@ -194,7 +195,7 @@ func (k8sHandler *K8sResourceHandler) collectRbacResources(allResources map[stri
 
 func getCloudProviderDescription(allResources map[string]workloadinterface.IMetadata, k8sResourcesMap *cautils.K8SResources) error {
 	if cloudsupport.IsRunningInCloudProvider() {
-		wl, err := cloudsupport.GetDescriptiveInfoFromCloudProvider()
+		wl, err := GetDescriptiveInfoFromCloudProvider()
 		if err != nil {
 			cluster := k8sinterface.GetCurrentContext().Cluster
 			provider := cloudsupport.GetCloudProvider(cluster)
@@ -214,4 +215,28 @@ func getCloudProviderDescription(allResources map[string]workloadinterface.IMeta
 	}
 	return nil
 
+}
+
+func GetDescriptiveInfoFromCloudProvider() (workloadinterface.IMetadata, error) {
+	currContext := k8sinterface.GetCurrentContext()
+	var clusterInfo *cloudsupportv1.CloudProviderDescribe
+	var err error
+	if currContext == nil {
+		return nil, nil
+	}
+	cloudProvider := cloudsupport.GetCloudProvider(currContext.Cluster)
+	switch cloudProvider {
+	case "eks":
+		clusterInfo, err = cloudsupportv1.GetClusterDescribeEKS(cloudsupportv1.NewEKSSupportMock(), currContext)
+	case "gke":
+		clusterInfo, err = cloudsupportv1.GetClusterDescribeGKE(cloudsupportv1.NewGKESupportMock())
+	case "aks":
+		return nil, fmt.Errorf("we currently do not support reading cloud provider description from aks")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return clusterInfo, nil
 }
