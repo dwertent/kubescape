@@ -47,7 +47,6 @@ jobs:
     name: Build docker container, tag and upload to registry
     needs: build
     # if: ${{ github.repository == 'armosec/kubescape' }}
-    if: secrets.QUAYIO_REGISTRY_PASSWORD != "" && secrets.QUAYIO_REGISTRY_USERNAME != ""
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -64,6 +63,14 @@ jobs:
       - name: Build the Docker image
         run: docker build . --file build/Dockerfile --tag ${{ steps.set-name.outputs.IMAGE_NAME }} --build-arg run_number=${{ github.run_number }}
       
+      - name: user echo 
+        env:  
+          QUAY_USERNAME: ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
+        run: echo ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
+        
+      - name: secret echo 
+        run: echo ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
+
       - name: Login to Quay.io
         env: # Or as an environment variable
           QUAY_PASSWORD: ${{ secrets.QUAYIO_REGISTRY_PASSWORD }}
