@@ -47,7 +47,7 @@ jobs:
     name: Build docker container, tag and upload to registry
     needs: build
     # if: ${{ github.repository == 'armosec/kubescape' }}
-    if: ${{ secrets.QUAYIO_REGISTRY_PASSWORD }}  != "" && ${{ secrets.QUAYIO_REGISTRY_USERNAME }} != ""
+    if: secrets.QUAYIO_REGISTRY_PASSWORD != "" && secrets.QUAYIO_REGISTRY_USERNAME != ""
     runs-on: ubuntu-latest
     permissions:
       id-token: write
