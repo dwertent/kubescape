@@ -67,6 +67,7 @@ jobs:
       
       - name: user echo 
         id: set_user
+        shell: bash
         env:  
           QUAY_USERNAME: ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
         run: |
