@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v1
 
@@ -59,7 +59,7 @@ jobs:
 
       - name: Set name
         id: set-name
-        run: echo ::set-output name=IMAGE_NAME::quay.io/${{ github.repository }}/kubescape:dev-v2.0.${{ github.run_number }}'
+        run: echo '::set-output name=IMAGE_NAME::quay.io/${{ github.repository }}/kubescape:dev-v2.0.${{ github.run_number }}'
 
       - name: Build the Docker image
         run: docker build . --file build/Dockerfile --tag ${{ steps.set-name.outputs.IMAGE_NAME }} --build-arg run_number=${{ github.run_number }}
