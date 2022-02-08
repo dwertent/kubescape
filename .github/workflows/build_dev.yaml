@@ -45,11 +45,9 @@ jobs:
 
   build-docker-quay:
     name: Build docker container, tag and upload to registry
-    # needs: build
-     
-    
-    # if: ${{ github.repository == 'armosec/kubescape' }}
+    needs: build
     runs-on: ubuntu-latest
+    # if: ${{ github.repository == 'armosec/kubescape' }} # TODO
     permissions:
       id-token: write
       packages: write
@@ -58,34 +56,40 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set name
-        id: set-name
-        run: echo '::set-output name=IMAGE_NAME::quay.io/${{ github.repository }}/kubescape:dev-v2.0.${{ github.run_number }}'
+      - name: Set image version
+        id: image-version
+        run: echo '::set-output version=IMAGE_VERSION::v2.0.${{ github.run_number }}'
 
-      # - name: Build the Docker image
-      #   run: docker build . --file build/Dockerfile --tag ${{ steps.set-name.outputs.IMAGE_NAME }} --build-arg run_number=${{ github.run_number }}
-      
-      - name: user echo 
-        id: set_user
-        shell: bash
-        env:  
-          QUAY_USERNAME: ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
-        run: |
-          if [[ ${QUAY_USERNAME} != "" ]]; then i=true; else i=false; fi
-          echo "::set-output name=quay_configured::${{ toJSON(${i}) }}"
+      - name: Set image name
+        id: image-name
+        run: echo '::set-output name=IMAGE_NAME::quay.io/${{ github.repository_owner }}/kubescape'
 
-      - name: secret echo 
-        run: echo ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
-
+      - name: Build the Docker image
+        run: docker build . --file build/Dockerfile --tag ${{ steps.image-name.outputs.IMAGE_NAME }}:${{ steps.image-version.outputs.IMAGE_VERSION }} --build-arg run_number=${{ github.run_number }}
+       
       - name: Login to Quay.io
         if: fromJSON(steps.set_user.outputs.quay_configured) 
         env:
           QUAY_PASSWORD: ${{ secrets.QUAYIO_REGISTRY_PASSWORD }}
           QUAY_USERNAME: ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
         run: docker login -u="${QUAY_USERNAME}" -p="${QUAY_PASSWORD}" quay.io
-        
-      # - name: Push Docker image
-      #   run: |
-      #     docker push ${{ steps.set-name.outputs.IMAGE_NAME }}
-    
-        
+      # - name: Login to GitHub Container Registry
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push Docker image
+        run: |
+          docker push ${{ steps.image-name.outputs.IMAGE_NAME }}:${{ steps.image-version.outputs.IMAGE_VERSION }}
+      
+      - name: Install cosign
+        uses: sigstore/cosign-installer@main
+        with:
+          cosign-release: 'v1.5.1' # optional
+      - name: sign kubescape container image
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+            cosign sign --force ${{ steps.image-name.outputs.IMAGE_NAME }}:${{ steps.image-version.outputs.IMAGE_VERSION }}
+
