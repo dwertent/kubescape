@@ -72,7 +72,7 @@ jobs:
           QUAY_USERNAME: ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
         run: |
           if [[ ${QUAY_USERNAME} != "" ]]; then i=true; else i=false; fi
-          echo "::set-output name=quay_configured::${{ toJSON($i) }}"
+          echo "::set-output name=quay_configured::${{ toJSON(${i}) }}"
 
       - name: secret echo 
         run: echo ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
