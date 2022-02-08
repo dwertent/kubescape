@@ -71,7 +71,7 @@ jobs:
       - name: user echo 
         env:  
           QUAY_USERNAME: ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
-        run: echo ${{ QUAY_USERNAME }}
+        run: echo ${QUAY_USERNAME}
 
       - name: secret echo 
         run: echo ${{ secrets.QUAYIO_REGISTRY_USERNAME }}
