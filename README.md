@@ -146,7 +146,7 @@ Or to your profile (not preferred): `nix-env --install -A nixpkgs.kubescape`
 
 ## Install using Go
 
-With a sufficient version of `go` you can install and build with `go install github.com/armosec/kubescape/v2@latest`
+With a version `go` version `1.18` you can install and build with `go install github.com/armosec/kubescape/v2@latest`
 
 ## Usage & Examples
 
