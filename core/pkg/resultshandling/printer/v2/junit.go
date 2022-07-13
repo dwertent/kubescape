@@ -13,6 +13,7 @@ import (
 	"github.com/armosec/kubescape/v2/core/cautils/logger/helpers"
 	"github.com/armosec/kubescape/v2/core/pkg/resultshandling/printer"
 	"github.com/armosec/opa-utils/reporthandling/results/v1/reportsummary"
+	"github.com/armosec/opa-utils/reporthandling/results/v1/resourcesresults"
 	"github.com/armosec/opa-utils/shared"
 )
 
@@ -119,23 +120,94 @@ func (junitPrinter *JunitPrinter) ActionPrint(opaSessionObj *cautils.OPASessionO
 func testsSuites(results *cautils.OPASessionObj) *JUnitTestSuites {
 	return &JUnitTestSuites{
 		Suites:   listTestsSuite(results),
-		Tests:    results.Report.SummaryDetails.NumberOfControls().All(),
+		Tests:    results.Report.SummaryDetails.NumberOfResources().All(),
 		Name:     "Kubescape Scanning",
-		Failures: results.Report.SummaryDetails.NumberOfControls().Failed(),
+		Failures: results.Report.SummaryDetails.NumberOfResources().Failed(),
 	}
 }
+
+// aggregate resources source to a list of resources results
+func sourceToResourcesResults(results *cautils.OPASessionObj) map[string][]resourcesresults.Result {
+	resourceResults := make(map[string][]resourcesresults.Result)
+	for i := range results.ResourceSource {
+		if r, ok := results.ResourcesResult[i]; ok {
+			if _, ok := resourceResults[results.ResourceSource[i].RelativePath]; !ok {
+				resourceResults[results.ResourceSource[i].RelativePath] = []resourcesresults.Result{}
+			}
+			resourceResults[results.ResourceSource[i].RelativePath] = append(resourceResults[results.ResourceSource[i].RelativePath], r)
+		}
+	}
+	return resourceResults
+}
+
+// listTestsSuite returns a list of testsuites
 func listTestsSuite(results *cautils.OPASessionObj) []JUnitTestSuite {
+	var testSuites []JUnitTestSuite
+	resourceResults := sourceToResourcesResults(results)
+	counter := 0
+	// control scan
+	for resourceID, resourcesResult := range resourceResults {
+		testSuite := JUnitTestSuite{}
+		// testSuite.Failures = len(resourcesResult.ListControlsIDs(nil).Failed())
+		testSuite.Timestamp = results.Report.ReportGenerationTime.String()
+
+		testSuite.ID = counter
+		counter++
+
+		testSuite.Name = results.ResourceSource[resourceID].RelativePath // "kubescape" // file name.resource name
+		// testSuite.Properties = properties(results.Report.SummaryDetails.Score)
+		testSuite.TestCases = testsCases(results, resourcesResult, testSuite.Name)
+		testSuites = append(testSuites, testSuite)
+		return testSuites
+	}
+
+	return testSuites
+}
+
+func testsCases(results *cautils.OPASessionObj, resourcesResult []resourcesresults.Result, className string) []JUnitTestCase {
+	var testCases []JUnitTestCase
+
+	for i := range resourcesResult {
+		testCase := JUnitTestCase{}
+		testCase.Name = resourcesResult[i].GetResourceID()
+		testCase.Classname = className
+		testCase.Status = string(resourcesResult[i].GetStatus(nil).Status())
+
+		// add controls to test case
+		for _, c := range resourcesResult[i].ListControls() {
+			control := results.Report.SummaryDetails.Controls.GetControl(reportsummary.EControlCriteriaID, c.GetID())
+			if control.GetStatus().IsFailed() {
+				testCaseFailure := JUnitFailure{}
+				testCaseFailure.Type = "Control"
+				failedPaths := failedPathsToString(&c)
+				testCaseFailure.Message = fmt.Sprintf("Remediation: %s\nMore details: %s\n\n%s", control.GetRemediation(), getControlLink(control.GetID()), strings.Join(failedPaths, "\n"))
+
+				testCase.Failure = &testCaseFailure
+			} else if control.GetStatus().IsSkipped() {
+				testCase.SkipMessage = &JUnitSkipMessage{
+					Message: "", // TODO - fill after statusInfo is supported
+				}
+
+			}
+			testCases = append(testCases, testCase)
+		}
+	}
+
+	return testCases
+}
+
+func listTestsSuiteOld(results *cautils.OPASessionObj) []JUnitTestSuite {
 	var testSuites []JUnitTestSuite
 
 	// control scan
 	if len(results.Report.SummaryDetails.ListFrameworks()) == 0 {
 		testSuite := JUnitTestSuite{}
-		testSuite.Failures = results.Report.SummaryDetails.NumberOfControls().Failed()
+		testSuite.Failures = results.Report.SummaryDetails.NumberOfControls().Failed() // ?
 		testSuite.Timestamp = results.Report.ReportGenerationTime.String()
 		testSuite.ID = 0
-		testSuite.Name = "kubescape"
+		testSuite.Name = "kubescape" // file name.resource name
 		testSuite.Properties = properties(results.Report.SummaryDetails.Score)
-		testSuite.TestCases = testsCases(results, &results.Report.SummaryDetails.Controls, "Kubescape")
+		testSuite.TestCases = testsCasesOld(results, &results.Report.SummaryDetails.Controls, "Kubescape")
 		testSuites = append(testSuites, testSuite)
 		return testSuites
 	}
@@ -147,13 +219,14 @@ func listTestsSuite(results *cautils.OPASessionObj) []JUnitTestSuite {
 		testSuite.ID = i
 		testSuite.Name = f.Name
 		testSuite.Properties = properties(f.Score)
-		testSuite.TestCases = testsCases(results, f.GetControls(), f.GetName())
+		testSuite.TestCases = testsCasesOld(results, f.GetControls(), f.GetName())
 		testSuites = append(testSuites, testSuite)
 	}
 
 	return testSuites
 }
-func testsCases(results *cautils.OPASessionObj, controls reportsummary.IControlsSummaries, classname string) []JUnitTestCase {
+
+func testsCasesOld(results *cautils.OPASessionObj, controls reportsummary.IControlsSummaries, classname string) []JUnitTestCase {
 	var testCases []JUnitTestCase
 
 	for _, cID := range controls.ListControlsIDs().All() {
