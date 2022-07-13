@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -154,7 +155,7 @@ func listTestsSuite(results *cautils.OPASessionObj) []JUnitTestSuite {
 		testSuite.ID = counter
 		counter++
 
-		testSuite.Name = path // "kubescape" // file name.resource name
+		testSuite.Name = strings.ReplaceAll(path, filepath.Ext(path), "") // "kubescape" // file name.resource name
 		// testSuite.Properties = properties(results.Report.SummaryDetails.Score)
 		testSuite.TestCases = testsCases(results, resourcesResult, testSuite.Name)
 		testSuites = append(testSuites, testSuite)
@@ -169,26 +170,28 @@ func testsCases(results *cautils.OPASessionObj, resourcesResult []resourcesresul
 
 	for i := range resourcesResult {
 		testCase := JUnitTestCase{}
-		testCase.Name = resourcesResult[i].GetResourceID()
+		testCase.Name = resourceNameToString(results.AllResources[resourcesResult[i].GetResourceID()])
 		testCase.Classname = className
 		testCase.Status = string(resourcesResult[i].GetStatus(nil).Status())
+		testCaseFailure := JUnitFailure{}
 
 		// add controls to test case
 		for _, c := range resourcesResult[i].ListControls() {
 			control := results.Report.SummaryDetails.Controls.GetControl(reportsummary.EControlCriteriaID, c.GetID())
 			if control.GetStatus().IsFailed() {
-				testCaseFailure := JUnitFailure{}
 				testCaseFailure.Type = "Control"
 				failedPaths := failedPathsToString(&c)
-				testCaseFailure.Message = fmt.Sprintf("Remediation: %s\nMore details: %s\n\n%s", control.GetRemediation(), getControlLink(control.GetID()), strings.Join(failedPaths, "\n"))
-
-				testCase.Failure = &testCaseFailure
+				if testCaseFailure.Message != "" {
+					testCaseFailure.Message += "===================================================================================================================\n\n"
+				}
+				testCaseFailure.Message += fmt.Sprintf("Remediation: %s\nLink for more details: %s\nPaths:\n%s", control.GetRemediation(), getControlLink(control.GetID()), strings.Join(failedPaths, "\n"))
 			} else if control.GetStatus().IsSkipped() {
 				testCase.SkipMessage = &JUnitSkipMessage{
 					Message: "", // TODO - fill after statusInfo is supported
 				}
 
 			}
+			testCase.Failure = &testCaseFailure
 			testCases = append(testCases, testCase)
 		}
 	}
@@ -272,6 +275,16 @@ func resourceToString(resource workloadinterface.IMetadata) string {
 		s += fmt.Sprintf("namespace: %s", resource.GetNamespace()) + sep
 	}
 	s += fmt.Sprintf("name: %s", resource.GetName())
+	return s
+}
+func resourceNameToString(resource workloadinterface.IMetadata) string {
+	sep := "; "
+	s := ""
+	s += fmt.Sprintf("kind=%s/", resource.GetKind())
+	if resource.GetNamespace() != "" {
+		s += fmt.Sprintf("namespace=%s/", resource.GetNamespace()) + sep
+	}
+	s += fmt.Sprintf("name=%s", resource.GetName())
 	return s
 }
 
