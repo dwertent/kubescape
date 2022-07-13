@@ -146,7 +146,7 @@ func listTestsSuite(results *cautils.OPASessionObj) []JUnitTestSuite {
 	resourceResults := sourceToResourcesResults(results)
 	counter := 0
 	// control scan
-	for resourceID, resourcesResult := range resourceResults {
+	for path, resourcesResult := range resourceResults {
 		testSuite := JUnitTestSuite{}
 		// testSuite.Failures = len(resourcesResult.ListControlsIDs(nil).Failed())
 		testSuite.Timestamp = results.Report.ReportGenerationTime.String()
@@ -154,11 +154,11 @@ func listTestsSuite(results *cautils.OPASessionObj) []JUnitTestSuite {
 		testSuite.ID = counter
 		counter++
 
-		testSuite.Name = results.ResourceSource[resourceID].RelativePath // "kubescape" // file name.resource name
+		testSuite.Name = path // "kubescape" // file name.resource name
 		// testSuite.Properties = properties(results.Report.SummaryDetails.Score)
 		testSuite.TestCases = testsCases(results, resourcesResult, testSuite.Name)
 		testSuites = append(testSuites, testSuite)
-		return testSuites
+		// return testSuites
 	}
 
 	return testSuites
