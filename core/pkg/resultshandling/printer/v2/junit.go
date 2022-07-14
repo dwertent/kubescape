@@ -182,18 +182,18 @@ func testsCases(results *cautils.OPASessionObj, resourcesResult []resourcesresul
 				testCaseFailure.Type = "Control"
 				failedPaths := failedPathsToString(&c)
 				if testCaseFailure.Message != "" {
-					testCaseFailure.Message += "===================================================================================================================\n\n"
+					testCaseFailure.Message += "\n===================================================================================================================\n\n"
 				}
-				testCaseFailure.Message += fmt.Sprintf("Remediation: %s\nLink for more details: %s\nPaths:\n%s", control.GetRemediation(), getControlLink(control.GetID()), strings.Join(failedPaths, "\n"))
+				testCaseFailure.Message += fmt.Sprintf("Link for more details: %s\nRemediation: %s\nPaths:\n%s\n", getControlLink(control.GetID()), control.GetRemediation(), strings.Join(failedPaths, "\n"))
 			} else if control.GetStatus().IsSkipped() {
 				testCase.SkipMessage = &JUnitSkipMessage{
 					Message: "", // TODO - fill after statusInfo is supported
 				}
 
 			}
-			testCase.Failure = &testCaseFailure
-			testCases = append(testCases, testCase)
 		}
+		testCase.Failure = &testCaseFailure
+		testCases = append(testCases, testCase)
 	}
 
 	return testCases
