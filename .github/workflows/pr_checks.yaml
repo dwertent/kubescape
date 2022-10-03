@@ -12,7 +12,7 @@ on:
     branches: [ workflow-call-testing ]
 jobs:
   trigger-test-workflow:
-    uses: ./test.yaml
+    uses: ./test.yaml@workflow-call-testing
     with:
       release: v2.0.${{ github.run_number }}
       client: test
