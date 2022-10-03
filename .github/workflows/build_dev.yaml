@@ -94,7 +94,6 @@ jobs:
 
   build-docker:
     name: Build docker container, tag and upload to registry
-    needs: build
     # if: ${{ github.repository == 'kubescape/kubescape' }} # TODO
     runs-on: ubuntu-latest
     permissions:
