@@ -12,7 +12,7 @@ on:
     branches: [ workflow-call-testing ]
 jobs:
   trigger-test-workflow:
-    uses: dwertent/kubescape/.github/workflows/test.yaml@workflow-call-testing
+    uses: ./.github/workflows/test.yaml
     with:
       release: "v2.0.${{ github.run_number }}"
       client: test
