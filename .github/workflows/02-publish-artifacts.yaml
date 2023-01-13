@@ -7,6 +7,10 @@ on:
         description: 'upload url'
         required: true
         type: string
+      release:
+        description: 'release tag'
+        required: true
+        type: string
 
 jobs:
   publish-artifacts:
@@ -39,7 +43,7 @@ jobs:
 
       - name: Build
         env:
-          RELEASE: ${{ env.TAG_NAME }}
+          RELEASE: ${{ inputs.release }}
           CLIENT: release
           CGO_ENABLED: 1
         run: python3 --version && python3 build.py

@@ -20,5 +20,5 @@ jobs:
   test:
     uses: ./.github/workflows/00-test.yaml
     with:
-      release: "${{ env.TAG_NAME }}"
+      release: ${{ github.ref_name}}
       client: test

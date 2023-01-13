@@ -8,14 +8,14 @@ jobs:
   test:
     uses: ./.github/workflows/00-test.yaml
     with:
-      release: "${{ env.TAG_NAME }}"
+      release: ${{ github.ref_name}}
       client: test
 
   create-release:
     uses: ./.github/workflows/01-create-release.yaml
     needs: test
     with:
-      release_name: "Release ${{ env.TAG_NAME }}"
+      release_name: "Release ${{ github.ref_name}}"
     secrets: inherit
 
   publish-artifacts:
@@ -23,6 +23,7 @@ jobs:
     needs: create-release
     with:
       upload_url: ${{ needs.create-release.outputs.upload_url }}
+      release: "${{ github.ref_name}}"
     secrets: inherit
        
 
@@ -32,7 +33,7 @@ jobs:
     with:
       client: "image-release"
       image_name: "quay.io/${{ github.repository_owner }}/kubescape"
-      image_tag: "${{ env.TAG_NAME }}"
+      image_tag: "${{ github.ref_name}}"
       support_platforms: true
       cosign: true
     secrets: inherit
