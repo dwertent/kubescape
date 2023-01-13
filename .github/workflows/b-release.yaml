@@ -4,15 +4,6 @@ on:
   push:
     tags:
     - 'v*.*.*'
-    paths-ignore:
-    - '**.yaml'
-    - '**.md'
-    - '**.sh'
-    - 'website/*'
-    - 'examples/*'
-    - 'docs/*'
-    - 'build/*'
-    - '.github/*'
 jobs:
   test:
     uses: ./.github/workflows/00-test.yaml
