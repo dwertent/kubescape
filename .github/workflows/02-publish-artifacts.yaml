@@ -15,7 +15,6 @@ on:
 jobs:
   publish-artifacts:
     name: Build and publish artifacts
-    needs: create-release
     runs-on: ${{ matrix.os }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
