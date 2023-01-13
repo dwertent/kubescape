@@ -7,6 +7,10 @@ on:
         description: 'release'
         required: true
         type: string
+      tag:
+        description: 'tag'
+        required: true
+        type: string
       draft:
         description: 'create draft release'
         required: false
@@ -31,6 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_name: ${{ inputs.release_name }}
+          tag_name: ${{ inputs.tag }}
           draft: ${{ inputs.draft }}
           prerelease: false
    

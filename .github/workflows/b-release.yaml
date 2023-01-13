@@ -16,6 +16,7 @@ jobs:
     needs: test
     with:
       release_name: "Release ${{ github.ref_name}}"
+      tag: ${{ github.ref_name}}
     secrets: inherit
 
   publish-artifacts:
