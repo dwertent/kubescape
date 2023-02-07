@@ -12,7 +12,7 @@ require (
 	github.com/gorilla/schema v1.2.0
 	github.com/kubescape/go-logger v0.0.8
 	github.com/kubescape/kubescape/v2 v2.0.0-00010101000000-000000000000
-	github.com/kubescape/opa-utils v0.0.231
+	github.com/kubescape/opa-utils v0.0.234
 	github.com/stretchr/testify v1.8.1
 	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.38.0
 	k8s.io/utils v0.0.0-20221128185143-99ec85e7a448
@@ -217,6 +217,7 @@ require (
 	github.com/kubescape/go-git-url v0.0.23 // indirect
 	github.com/kubescape/k8s-interface v0.0.99 // indirect
 	github.com/kubescape/rbac-utils v0.0.19 // indirect
+	github.com/kubescape/regolibrary v1.0.250 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/letsencrypt/boulder v0.0.0-20220929215747-76583552c2be // indirect
