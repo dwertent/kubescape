@@ -1,10 +1,8 @@
 name: 03-create_release_digests
 on:
   release:
-    types: [published]
-    branches:
-      - 'master'
-      - 'main'
+    types: [ published ]
+
 jobs:
   create_release_digests:
     name: Creating digests

@@ -53,7 +53,7 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY_PROD }}
           REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-        run: "echo \"is-secret-set=${{ env.CUSTOMER != '' && \n                        env.USERNAME != '' &&\n                        env.PASSWORD != '' &&\n                        env.CLIENT_ID != '' &&\n                        env.SECRET_KEY != '' &&\n                        env.REGISTRY_USERNAME != '' &&\n                        env.REGISTRY_PASSWORD != ''\n                      }}\" >> $GITHUB_OUTPUT\n"
+        run: "echo \"is-secret-set=${{ env.CUSTOMER != '' && \n env.USERNAME != '' &&\n env.PASSWORD != '' &&\n env.CLIENT_ID != '' &&\n env.SECRET_KEY != '' &&\n env.REGISTRY_USERNAME != '' &&\n env.REGISTRY_PASSWORD != ''\n }}\" >> $GITHUB_OUTPUT\n"
 
       - id: export_tests_to_env
         name: set test name
@@ -64,7 +64,7 @@ jobs:
         
 
   binary-build:
-    if: ${{ github.event.inputs.BUILD_AND_TEST_LOCAL_KUBESCAPE_CLI == 'true' }}
+    if: inputs.BUILD_AND_TEST_LOCAL_KUBESCAPE_CLI == 'true'
     name: Create cross-platform build
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -194,7 +194,7 @@ jobs:
     runs-on: ubuntu-latest # This cannot change
     steps:
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # ratchet:actions/download-artifact@v3.0.2
-        if: github.event.inputs.BUILD_AND_TEST_LOCAL_KUBESCAPE_CLI == 'true'
+        if: inputs.BUILD_AND_TEST_LOCAL_KUBESCAPE_CLI == 'true'
         id: download-artifact
         with:
           name: kubescape-ubuntu-latest
@@ -203,7 +203,7 @@ jobs:
       - run: ls -laR
 
       - name: chmod +x
-        if: github.event.inputs.BUILD_AND_TEST_LOCAL_KUBESCAPE_CLI == 'true'
+        if: inputs.BUILD_AND_TEST_LOCAL_KUBESCAPE_CLI == 'true'
         run: chmod +x -R ${{steps.download-artifact.outputs.download-path}}/kubescape-ubuntu-latest
 
       - name: Checkout systests repo
@@ -232,7 +232,7 @@ jobs:
           cluster_name: ${{ steps.uuid.outputs.RANDOM_UUID }}
 
       - name: run-tests-on-local-built-kubescape
-        if: github.event.inputs.BUILD_AND_TEST_LOCAL_KUBESCAPE_CLI == 'true'
+        if: inputs.BUILD_AND_TEST_LOCAL_KUBESCAPE_CLI == 'true'
         env:
           CUSTOMER: ${{ secrets.CUSTOMER }}
           USERNAME: ${{ secrets.USERNAME }}
@@ -258,7 +258,7 @@ jobs:
           deactivate
 
       - name: run-tests-on-latest-release-of-kubescape
-        if: github.event.inputs.BUILD_AND_TEST_LOCAL_KUBESCAPE_CLI == 'false'
+        if: inputs.BUILD_AND_TEST_LOCAL_KUBESCAPE_CLI == 'false'
         env:
           CUSTOMER: ${{ secrets.CUSTOMER }}
           USERNAME: ${{ secrets.USERNAME }}
