@@ -4,6 +4,7 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
     paths-ignore:
       - '**.yaml'
+      - '**.yml'
       - '**.md'
       - '**.sh'
       - 'website/*'

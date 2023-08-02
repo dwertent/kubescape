@@ -1,23 +1,31 @@
-name: pr-agent
+name: pr-update
 
 on:
   pull_request:
-  issue_comment:
+    paths-ignore:
+      - 'website/*'
+      - 'examples/*'
+  label:
+    types: [created, edited]
+
 
 permissions:
   issues: write
   pull-requests: write
 
 jobs:
-  pr_agent_job:
-    if: ${{ contains( github.event.pull_request.labels.*.name, 'AI') }} ## run only if labeled as "AI"
+  update-pr:
+    if: ${{ contains( github.event.pull_request.labels.*.name, 'AI') }} ## run only if labeled as "trigger-integration-test"
     runs-on: ubuntu-latest
-    name: Run pr agent on every pull request, respond to user comments
+    continue-on-error: true
     steps:
-      - name: PR Agent action step
-        continue-on-error: true
-        id: pragent
-        uses: Codium-ai/pr-agent@main
-        env:
-          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: /review
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: /describe
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: /improve
+   
