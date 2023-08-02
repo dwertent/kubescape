@@ -3,12 +3,19 @@ name: pr-agent
 on:
   pull_request:
   issue_comment:
+
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
   pr_agent_job:
+    if: ${{ contains( github.event.pull_request.labels.*.name, 'AI') }} ## run only if labeled as "AI"
     runs-on: ubuntu-latest
     name: Run pr agent on every pull request, respond to user comments
     steps:
       - name: PR Agent action step
+        continue-on-error: true
         id: pragent
         uses: Codium-ai/pr-agent@main
         env:
