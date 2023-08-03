@@ -79,7 +79,6 @@ func (rh *ResultsHandler) HandleResults(ctx context.Context) error {
 	// Display scan results in the UI first to give immediate value.
 
 	rh.UiPrinter.ActionPrint(ctx, rh.ScanData, rh.ImageScanData)
-
 	rh.UiPrinter.PrintNextSteps()
 
 	// Then print to output files
