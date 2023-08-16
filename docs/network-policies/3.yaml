@@ -1,0 +1,65 @@
+# Not restricted policy - We will create the policy based on the IPs we see are in use. 
+
+# If we can enrich the IPs based on a known server - we will do it
+# If we can't enrich the IPs - we will open the port for all incoming/outgoing traffic
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ca-aggregator-kubescape-network
+  namespace: ca-development
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: ca-aggregator-kubescape
+  policyTypes:
+  - Ingress
+  - Egress
+
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/component: ca-event-receiver
+    ports:
+    - port: 7666
+      protocol: TCP
+
+  egress:
+  - ports:
+    - port: 80
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: fission
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/managed-by: Helm
+          application: fission-router
+          chart: fission-all-v1.15.1
+          svc: router
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/component: kubescape-config-service
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/component: users-notification-service
+
+  - ports:
+    - port: 8080
+      protocol: TCP
+    to:
+    - ipBlock:
+        # known server (Azure)
+        cidr: 199.49.11.1/16
+  
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        # IP unknown server: 185.199.108.133
+        # IP unknown server: 18.210.197.188
+        # IP known server (AWS): 185.199.108.133/16
+        cidr: 0.0.0.0/0

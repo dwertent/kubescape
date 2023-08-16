@@ -1,0 +1,4 @@
+# Restricted Ingress, non-restricted Egress policy
+
+# Ingress - Should be like 1 (restricted)
+# Egress - Should be like 3 (not restricted)
