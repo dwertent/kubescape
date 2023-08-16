@@ -1,5 +1,5 @@
 # Restricted policy - We will create the policy based on the IPs we see are in use.
- 
+
 # If we can enrich the IPs based on a known server - we will do it
 # If we can't enrich the IPs - we will leave it as-is
 
@@ -60,9 +60,11 @@ spec:
     to:
     - ipBlock:
         # unknown server
+        # dns name
         cidr: 18.206.20.10/32
     - ipBlock:
         # unknown server
+        # dns name
         cidr: 18.210.197.188/32
     - ipBlock:
         # known server - AWS, this has been enriched 
