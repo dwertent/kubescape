@@ -32,6 +32,10 @@ jobs:
         with:
           path: .
 
+      - name: Set release token
+        run: |
+          find . -type f -print
+  
       # TODO: kubescape-windows-latest is deprecated and should be removed
       - name: Get kubescape.exe from kubescape-windows-latest.exe
         run: cp ${{steps.download-artifact.outputs.download-path}}/kubescape-windows-latest.exe ${{steps.download-artifact.outputs.download-path}}/kubescape.exe
