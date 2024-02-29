@@ -39,7 +39,7 @@ jobs:
   
       # TODO: kubescape-windows-latest is deprecated and should be removed
       - name: Get kubescape.exe from kubescape-windows-latest.exe
-        run: cp /home/runner/work/kubescape/kubescape-windows-latest.exe /home/runner/work/kubescape/kubescape.exe
+        run: cp ${{steps.download-artifact.outputs.download-path}}/kubescape/kubescape-windows-latest.exe ${{steps.download-artifact.outputs.download-path}}/kubescape/kubescape.exe
       
       - name: Set release token
         run: |
@@ -52,7 +52,7 @@ jobs:
       - name: Generate file list
         id: generate-file-list
         run: |
-          FILES=$(find /home/runner/work/kubescape -type f | sed 's/^/.\//')
+          FILES=$(find ${{steps.download-artifact.outputs.download-path}} -type f | sed 's/^/.\//')
           echo "FILES=$FILES" >> $GITHUB_ENV
 
       - name: Release
