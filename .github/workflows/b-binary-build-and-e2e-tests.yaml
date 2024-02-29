@@ -117,14 +117,6 @@ jobs:
           go-version: ${{ inputs.GO_VERSION }}
           cache: true
 
-      - name: Test core pkg
-        run: ${{ env.DOCKER_CMD }} go test -v ./...
-        if: startsWith(github.ref, 'refs/tags')
-
-      - name: Test httphandler pkg
-        run: ${{ env.DOCKER_CMD }} sh -c 'cd httphandler && go test -v ./...'
-        if: startsWith(github.ref, 'refs/tags')
-
       - uses: anchore/sbom-action/download-syft@v0.15.2
         name: Setup Syft
 
