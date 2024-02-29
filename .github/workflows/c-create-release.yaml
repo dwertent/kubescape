@@ -33,9 +33,9 @@ jobs:
           path: .
 
       # TODO: kubescape-windows-latest is deprecated and should be removed
-      - name: Get kubescape.exe from kubescape-windows-latest
-        run: cp ${{steps.download-artifact.outputs.download-path}}/kubescape-${{ env.WINDOWS_OS }} ${{steps.download-artifact.outputs.download-path}}/kubescape.exe
-
+      - name: Get kubescape.exe from kubescape-windows-latest.exe
+        run: cp ${{steps.download-artifact.outputs.download-path}}/kubescape-windows-latest.exe ${{steps.download-artifact.outputs.download-path}}/kubescape.exe
+      
       - name: Set release token
         run: |
           if [ "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" != "" ]; then
