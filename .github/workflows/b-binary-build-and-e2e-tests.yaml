@@ -132,7 +132,7 @@ jobs:
         name: Build
         with:
           distribution: goreleaser
-          version: latest
+          version: ${{ inputs.RELEASE }}
           args: release --clean --snapshot
         env:
           RELEASE: ${{ inputs.RELEASE }}
