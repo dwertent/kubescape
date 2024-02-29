@@ -52,8 +52,8 @@ jobs:
       - name: Generate file list
         id: generate-file-list
         run: |
-          FILES=$(find ${{steps.download-artifact.outputs.download-path}} -type f | sed 's/^/.\//')
-          echo "FILES=$FILES" >> $GITHUB_ENV
+          cd kubescape/
+          echo "FILES=$(find . -type f)" >> $GITHUB_ENV
 
       - name: Release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # ratchet:softprops/action-gh-release@v1
