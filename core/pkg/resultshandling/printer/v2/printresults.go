@@ -1,3 +1,0 @@
-package printer
-
-var INDENT = "   "
