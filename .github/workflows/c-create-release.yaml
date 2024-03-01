@@ -42,6 +42,7 @@ jobs:
         run: cp ${{steps.download-artifact.outputs.download-path}}/kubescape/kubescape-windows-latest.exe ${{steps.download-artifact.outputs.download-path}}/kubescape/kubescape.exe
       
       - name: Set release token
+        id: set-token
         run: |
           if [ "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" != "" ]; then
             echo "TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV;
@@ -53,12 +54,12 @@ jobs:
         id: generate-file-list
         run: |
           cd kubescape/
-          echo "FILES=$(find . -type f)" >> $GITHUB_ENV
+          echo FILES=$(find . -type f) >> $GITHUB_ENV;
 
       - name: Release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # ratchet:softprops/action-gh-release@v1
         with:
-          token: ${{ env.TOKEN }}
+          token: ${{ steps.set-token.outputs.TOKEN }}
           name: ${{ inputs.RELEASE_NAME }}
           tag_name: ${{ inputs.TAG }}
           body: ${{ github.event.pull_request.body }}
