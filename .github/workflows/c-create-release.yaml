@@ -64,4 +64,24 @@ jobs:
           body: ${{ github.event.pull_request.body }}
           draft: ${{ inputs.DRAFT }}
           prerelease: false
-          files: "*"
+          fail_on_unmatched_files: false
+          files: |
+            ./kubescape/kubescape-ubuntu-latest.tar.gz 
+            ./kubescape/kubescape-ubuntu-latest.tar.gz.sbom 
+            ./kubescape/kubescape-arm64-windows-latest.tar.gz.sbom 
+            ./kubescape/kubescape-windows-latest.exe 
+            ./kubescape/kubescape-windows-latest.tar.gz 
+            ./kubescape/kubescape-arm64-windows-latest.tar.gz 
+            ./kubescape/kubescape-arm64-macos-latest.tar.gz.sbom 
+            ./kubescape/kubescape-arm64-ubuntu-latest
+            ./kubescape/kubescape-ubuntu-latest 
+            ./kubescape/kubescape-arm64-ubuntu-latest.tar.gz 
+            ./kubescape/kubescape-arm64-macos-latest 
+            ./kubescape/kubescape-macos-latest.tar.gz 
+            ./kubescape/kubescape-macos-latest.tar.gz.sbom 
+            ./kubescape/kubescape.exe 
+            ./kubescape/kubescape-windows-latest.tar.gz.sbom 
+            ./kubescape/kubescape-arm64-ubuntu-latest.tar.gz.sbom 
+            ./kubescape/kubescape-macos-latest 
+            ./kubescape/kubescape-arm64-macos-latest.tar.gz 
+            ./kubescape/kubescape-arm64-windows-latest.exe
