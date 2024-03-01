@@ -65,4 +65,5 @@ jobs:
           draft: ${{ inputs.DRAFT }}
           fail_on_unmatched_files: true
           prerelease: false
-          files: ${{ steps.generate-file-list.outputs.files }}
+          files: |
+            ${{ steps.generate-file-list.outputs.files }}
