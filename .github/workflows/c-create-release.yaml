@@ -64,3 +64,4 @@ jobs:
           body: ${{ github.event.pull_request.body }}
           draft: ${{ inputs.DRAFT }}
           prerelease: false
+          files: "*"
