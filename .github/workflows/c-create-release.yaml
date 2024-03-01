@@ -32,11 +32,7 @@ jobs:
         with:
           path: .
 
-      - name: List artifacts
-        run: |
-          pwd
-          find . -type f -print
-  
+
       # TODO: kubescape-windows-latest is deprecated and should be removed
       - name: Get kubescape.exe from kubescape-windows-latest.exe
         run: cp ${{steps.download-artifact.outputs.download-path}}/kubescape/kubescape-windows-latest.exe ${{steps.download-artifact.outputs.download-path}}/kubescape/kubescape.exe
@@ -49,12 +45,11 @@ jobs:
           else
             echo "token=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_OUTPUT;
           fi
-
-      - name: Generate file list
-        id: generate-file-list
+          
+      - name: List artifacts
         run: |
-          echo files=$(find . -type f -exec echo {} \;) >> $GITHUB_OUTPUT;
-
+          find . -type f -print
+    
       - name: Release
         uses: softprops/action-gh-release@975c1b265e11dd76618af1c374e7981f9a6ff44a 
         with:
@@ -64,24 +59,24 @@ jobs:
           body: ${{ github.event.pull_request.body }}
           draft: ${{ inputs.DRAFT }}
           prerelease: false
-          fail_on_unmatched_files: false
+          fail_on_unmatched_files: true
           files: |
-            ./kubescape/kubescape-ubuntu-latest.tar.gz 
-            ./kubescape/kubescape-ubuntu-latest.tar.gz.sbom 
-            ./kubescape/kubescape-arm64-windows-latest.tar.gz.sbom 
-            ./kubescape/kubescape-windows-latest.exe 
-            ./kubescape/kubescape-windows-latest.tar.gz 
-            ./kubescape/kubescape-arm64-windows-latest.tar.gz 
-            ./kubescape/kubescape-arm64-macos-latest.tar.gz.sbom 
-            ./kubescape/kubescape-arm64-ubuntu-latest
-            ./kubescape/kubescape-ubuntu-latest 
-            ./kubescape/kubescape-arm64-ubuntu-latest.tar.gz 
-            ./kubescape/kubescape-arm64-macos-latest 
-            ./kubescape/kubescape-macos-latest.tar.gz 
-            ./kubescape/kubescape-macos-latest.tar.gz.sbom 
+            ./kubescape/kubescape-${{ env.UBUNTU_OS }}.tar.gz 
+            ./kubescape/kubescape-${{ env.UBUNTU_OS }}.tar.gz.sbom 
+            ./kubescape/kubescape-arm64-${{ env.WINDOWS_OS }}.tar.gz.sbom 
+            ./kubescape/kubescape-${{ env.WINDOWS_OS }}.exe 
+            ./kubescape/kubescape-${{ env.WINDOWS_OS }}.tar.gz 
+            ./kubescape/kubescape-arm64-${{ env.WINDOWS_OS }}.tar.gz 
+            ./kubescape/kubescape-arm64-${{ env.MAC_OS }}.tar.gz.sbom 
+            ./kubescape/kubescape-arm64-${{ env.UBUNTU_OS }}
+            ./kubescape/kubescape-${{ env.UBUNTU_OS }} 
+            ./kubescape/kubescape-arm64-${{ env.UBUNTU_OS }}.tar.gz 
+            ./kubescape/kubescape-arm64-${{ env.MAC_OS }} 
+            ./kubescape/kubescape-${{ env.MAC_OS }}.tar.gz 
+            ./kubescape/kubescape-${{ env.MAC_OS }}.tar.gz.sbom 
             ./kubescape/kubescape.exe 
-            ./kubescape/kubescape-windows-latest.tar.gz.sbom 
-            ./kubescape/kubescape-arm64-ubuntu-latest.tar.gz.sbom 
-            ./kubescape/kubescape-macos-latest 
-            ./kubescape/kubescape-arm64-macos-latest.tar.gz 
-            ./kubescape/kubescape-arm64-windows-latest.exe
+            ./kubescape/kubescape-${{ env.WINDOWS_OS }}.tar.gz.sbom 
+            ./kubescape/kubescape-arm64-${{ env.UBUNTU_OS }}.tar.gz.sbom 
+            ./kubescape/kubescape-${{ env.MAC_OS }} 
+            ./kubescape/kubescape-arm64-${{ env.MAC_OS }}.tar.gz 
+            ./kubescape/kubescape-arm64-${{ env.WINDOWS_OS }}.exe
