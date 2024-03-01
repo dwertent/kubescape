@@ -45,9 +45,9 @@ jobs:
         id: set-token
         run: |
           if [ "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" != "" ]; then
-            echo TOKEN="${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV;
+            echo TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} >> $GITHUB_ENV;
           else
-            echo TOKEN="${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV;
+            echo TOKEN=${{ secrets.GITHUB_TOKEN }} >> $GITHUB_ENV;
           fi
 
       - name: Generate file list
@@ -57,9 +57,8 @@ jobs:
           echo FILES=$(find . -type f) >> $GITHUB_ENV;
 
       - name: Release
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # ratchet:softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@975c1b265e11dd76618af1c374e7981f9a6ff44a 
         with:
-
           token: ${{ steps.set-token.outputs.TOKEN }}
           name: ${{ inputs.RELEASE_NAME }}
           tag_name: ${{ inputs.TAG }}
